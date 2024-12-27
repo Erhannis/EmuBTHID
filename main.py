@@ -12,7 +12,19 @@ from dbus.mainloop.glib import DBusGMainLoop
 """
 Change this CONTROLLER_MAC to the mac of your own device
 """
-CONTROLLER_MAC = "5C:87:9C:96:BE:5E"
+import subprocess
+command = 'bluetoothctl list | grep -oP "([0-9a-fA-F]{2}:?){6}"'
+result = subprocess.run(command, shell=True, capture_output=True, text=True)
+output = result.stdout.strip()
+print(output)
+CONTROLLER_MAC = output
+
+# At this point, user should ensure "bluetoothd -P input"
+
+os.system("bluetoothctl power on")
+os.system("xhost +")
+os.system("bluetoothctl discoverable on")
+os.system("bluetoothctl pairable on")
 
 usbhid_map = {}
 with open("keycode.txt") as f:
